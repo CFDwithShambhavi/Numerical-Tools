@@ -1,6 +1,7 @@
 
 # Author: Shambhavi Nandan
 
+# This code implements 2D diffusion model for pandemic spread. The original paper can be found her: https://api.semanticscholar.org/CorpusID:9108055.oa
 
 import matplotlib.pyplot as plt
 #get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'retina'")
