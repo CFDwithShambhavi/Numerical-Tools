@@ -121,7 +121,7 @@ while np.any(sample2D_char=='S'): # S is more appropriate when random numbers ar
             
             
     if np.abs(n - nWrite)==0:
-        print(n,'\n')
+        #print(n,'\n')
         csv.csv_fileWriter(path_name, file_name+str(n/2000)+'.csv', ',', {'Disease State':sample2D_num.flatten()})
         #csv.csv_fileWriter(path_name, file_name+'.csv', ',', {'Disease State':sample2D_num.flatten()})
         nWrite += nEnd/nbSaves
