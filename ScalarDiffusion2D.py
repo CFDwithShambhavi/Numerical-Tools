@@ -258,7 +258,7 @@ dy = ly / ny
 
 
 # Boundary Conditions:
-left = ('P',10.0)
+left = ('D',100.0)
 top = ('D',0.0)
 right = ('D',0.0)
 bottom = ('D',0.0)
@@ -270,12 +270,11 @@ T_ini[1:-1,1:-1] = 0.0
 # Phyisical Parameters:
 K = 205.0e5
 Cp = 921.096
-Di = 1.0e1
 rho = 2710.0
 
 # Time parameters:
 dt = 1.0e-1
-nt = 600.0
+nt = 250.0
 # time interval ater which file will be saved
 save_t = 10.
 
