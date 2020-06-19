@@ -9,7 +9,7 @@ Created on Thu Jun 11 15:22:43 2020
 import numpy as np
 import CSV_FileReader_Writer as csv
 import MatrixTools as mt
-import os
+#import os
 
 
 def assemble_A_and_S(K,Cp,rho,Tc_old,dt,ny,nx,dx,dy,left,top,right,bottom):
@@ -34,16 +34,16 @@ def assemble_A_and_S(K,Cp,rho,Tc_old,dt,ny,nx,dx,dy,left,top,right,bottom):
                     
                     if top[0] == 'D' and left[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + 2*Alpha/dy**2
-                        source[i,j] = Tc_old[j,i]/dt + left[1]*Alpha/dx**2 + top[1]*Alpha/dy**2
+                        source[j,i] = Tc_old[j,i]/dt + left[1]*Alpha/dx**2 + top[1]*Alpha/dy**2
                     elif top[0] == 'N' and left[0] == 'N':
                         ac[j,i] = (1./dt) + Alpha/dx**2 + Alpha/dy**2
-                        source[i,j] = Tc_old[j,i]/dt + left[1]/dx - top[1]/dy
+                        source[j,i] = Tc_old[j,i]/dt + left[1]/dx - top[1]/dy
                     elif top[0] == 'D' and left[0] == 'N':
                         ac[j,i] = (1./dt) + Alpha/dx**2 + 2*Alpha/dy**2
-                        source[i,j] = Tc_old[j,i]/dt + left[1]/dx + top[1]*Alpha/dy**2
+                        source[j,i] = Tc_old[j,i]/dt + left[1]/dx + top[1]*Alpha/dy**2
                     elif top[0] == 'N' and left[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + Alpha/dy**2
-                        source[i,j] = Tc_old[j,i]/dt + left[1]*Alpha/dx**2 - top[1]/dy
+                        source[j,i] = Tc_old[j,i]/dt + left[1]*Alpha/dx**2 - top[1]/dy
                     else:
                         raise ValueError('Appropriate boundary conditions not chosen')
                     
@@ -206,12 +206,16 @@ def assemble_A_and_S(K,Cp,rho,Tc_old,dt,ny,nx,dx,dy,left,top,right,bottom):
     
     return (A, source[1:-1,1:-1])
 
-def solve_Temperature2D(K,Cp,rho,ny,nx,dx,dy,left,top,right,bottom,file_name,path_name,T_ini,dt,nt,save_t):
+def solve_Temperature2D(K,Cp,rho,ny,nx,dx,dy,left,top,right,bottom,file_name,path_name,T_ini,dt,t,save_t):
     
-    t = 0.
     T_old = T_ini.copy()
+    
+    nt = int(t/dt)
+    save_n = int(save_t/dt)
+    
+    file_num = 0
         
-    while t <= nt:
+    for n in range(0, nt+1):
         
         # Boundary Conditions implementation over the grid:
         if left[0] == 'D' and top[0] == 'D' and right[0] == 'D' and bottom[0] == 'D':
@@ -228,13 +232,14 @@ def solve_Temperature2D(K,Cp,rho,ny,nx,dx,dy,left,top,right,bottom,file_name,pat
             raise ValueError('This boundary condition is not yet implemented')
         
         #print(np.abs(t-save_t),'\n')
-        if np.abs(t-save_t)<=0.1 or t==0.:
-            print('############################ Time = ',int(t)+1,' sec. ############################','\n')
+        if np.abs(n-save_n) == 0 or n == 0:
+            print('############################ Time = ',n*dt,' sec. ############################','\n')
             data = {}
             data['T'] = T_old.flatten()
-            csv.csv_fileWriter(path_name, file_name+str(int(t)+1)+'.csv', ',', data)
-            if t>0:
-                save_t += 10.
+            csv.csv_fileWriter(path_name, file_name+str(file_num)+'.csv', ',', data)
+            if n>0:
+                save_n += int(save_t/dt)
+            file_num += 1
         
         A, S = assemble_A_and_S(K,Cp,rho,T_old,dt,ny,nx,dx,dy,left,top,right,bottom)
         sol = np.linalg.solve(A,S.flatten())
