@@ -34,16 +34,16 @@ def assemble_A_and_S(K,Cp,rho,Tc_old,dt,ny,nx,dx,dy,left,top,right,bottom):
                     
                     if top[0] == 'D' and left[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + left[1]*Alpha/dx**2 + top[1]*Alpha/dy**2
+                        source[j,i] = Tc_old[j,i]/dt + left[1][j]*Alpha/dx**2 + top[1][i]*Alpha/dy**2
                     elif top[0] == 'N' and left[0] == 'N':
                         ac[j,i] = (1./dt) + Alpha/dx**2 + Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + left[1]/dx - top[1]/dy
+                        source[j,i] = Tc_old[j,i]/dt + left[1][j]/dx - top[1][i]/dy
                     elif top[0] == 'D' and left[0] == 'N':
                         ac[j,i] = (1./dt) + Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + left[1]/dx + top[1]*Alpha/dy**2
+                        source[j,i] = Tc_old[j,i]/dt + left[1][j]/dx + top[1][i]*Alpha/dy**2
                     elif top[0] == 'N' and left[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + left[1]*Alpha/dx**2 - top[1]/dy
+                        source[j,i] = Tc_old[j,i]/dt + left[1][j]*Alpha/dx**2 - top[1][i]/dy
                     else:
                         raise ValueError('Appropriate boundary conditions not chosen')
                     
@@ -57,10 +57,10 @@ def assemble_A_and_S(K,Cp,rho,Tc_old,dt,ny,nx,dx,dy,left,top,right,bottom):
                     
                     if top[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + top[1]*Alpha/dy**2
+                        source[j,i] = Tc_old[j,i]/dt + top[1][i]*Alpha/dy**2
                     elif top[0] == 'N':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt - top[1]/dy
+                        source[j,i] = Tc_old[j,i]/dt - top[1][i]/dy
                     else:
                         raise ValueError('Appropriate boundary conditions not chosen')
                         
@@ -74,16 +74,16 @@ def assemble_A_and_S(K,Cp,rho,Tc_old,dt,ny,nx,dx,dy,left,top,right,bottom):
                     
                     if top[0] == 'D' and right[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + right[1]*Alpha/dx**2 + top[1]*Alpha/dy**2
+                        source[j,i] = Tc_old[j,i]/dt + right[1][j]*Alpha/dx**2 + top[1][i]*Alpha/dy**2
                     elif top[0] == 'N' and right[0] == 'N':
                         ac[j,i] = (1./dt) + Alpha/dx**2 + Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt - right[1]/dx - top[1]/dy
+                        source[j,i] = Tc_old[j,i]/dt - right[1][j]/dx - top[1][i]/dy
                     elif top[0] == 'D' and right[0] == 'N':
                         ac[j,i] = (1./dt) + Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt - right[1]/dx + top[1]*Alpha/dy**2
+                        source[j,i] = Tc_old[j,i]/dt - right[1][j]/dx + top[1][i]*Alpha/dy**2
                     elif top[0] == 'N' and right[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + right[1]*Alpha/dx**2 - top[1]/dy
+                        source[j,i] = Tc_old[j,i]/dt + right[1][j]*Alpha/dx**2 - top[1][i]/dy
                     else:
                         raise ValueError('Appropriate boundary conditions not chosen')
                     
@@ -101,16 +101,16 @@ def assemble_A_and_S(K,Cp,rho,Tc_old,dt,ny,nx,dx,dy,left,top,right,bottom):
                     
                     if bottom[0] == 'D' and left[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + left[1]*Alpha/dx**2 + bottom[1]*Alpha/dy**2
+                        source[j,i] = Tc_old[j,i]/dt + left[1][j]*Alpha/dx**2 + bottom[1][i]*Alpha/dy**2
                     elif bottom[0] == 'N' and left[0] == 'N':
                         ac[j,i] = (1./dt) + Alpha/dx**2 + Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + left[1]/dx + bottom[1]/dy
+                        source[j,i] = Tc_old[j,i]/dt + left[1][j]/dx + bottom[1][i]/dy
                     elif bottom[0] == 'D' and left[0] == 'N':
                         ac[j,i] = (1./dt) + Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + left[1]/dx + bottom[1]*Alpha/dy**2
+                        source[j,i] = Tc_old[j,i]/dt + left[1][j]/dx + bottom[1][i]*Alpha/dy**2
                     elif bottom[0] == 'N' and left[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + left[1]*Alpha/dx**2 + bottom[1]/dy
+                        source[j,i] = Tc_old[j,i]/dt + left[1][j]*Alpha/dx**2 + bottom[1][i]/dy
                     else:
                         raise ValueError('Appropriate boundary conditions not chosen')
                     
@@ -123,10 +123,10 @@ def assemble_A_and_S(K,Cp,rho,Tc_old,dt,ny,nx,dx,dy,left,top,right,bottom):
                     
                     if bottom[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + bottom[1]*Alpha/dy**2
+                        source[j,i] = Tc_old[j,i]/dt + bottom[1][i]*Alpha/dy**2
                     elif bottom[0] == 'N':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + bottom[1]/dy
+                        source[j,i] = Tc_old[j,i]/dt + bottom[1][i]/dy
                     else:
                         raise ValueError('Appropriate boundary conditions not chosen')
                     
@@ -139,16 +139,16 @@ def assemble_A_and_S(K,Cp,rho,Tc_old,dt,ny,nx,dx,dy,left,top,right,bottom):
                     
                     if bottom[0] == 'D' and right[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + right[1]*Alpha/dx**2 + bottom[1]*Alpha/dy**2
+                        source[j,i] = Tc_old[j,i]/dt + right[1][j]*Alpha/dx**2 + bottom[1][i]*Alpha/dy**2
                     elif bottom[0] == 'N' and right[0] == 'N':
                         ac[j,i] = (1./dt) + Alpha/dx**2 + Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt - right[1]/dx + bottom[1]/dy
+                        source[j,i] = Tc_old[j,i]/dt - right[1][j]/dx + bottom[1][i]/dy
                     elif bottom[0] == 'D' and right[0] == 'N':
                         ac[j,i] = (1./dt) + Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt - right[1]/dx + bottom[1]*Alpha/dy**2
+                        source[j,i] = Tc_old[j,i]/dt - right[1][j]/dx + bottom[1][i]*Alpha/dy**2
                     elif bottom[0] == 'N' and right[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + right[1]*Alpha/dx**2 + bottom[1]/dy
+                        source[j,i] = Tc_old[j,i]/dt + right[1][j]*Alpha/dx**2 + bottom[1][i]/dy
                     else:
                         raise ValueError('Appropriate boundary conditions not chosen')
                     
@@ -165,10 +165,10 @@ def assemble_A_and_S(K,Cp,rho,Tc_old,dt,ny,nx,dx,dy,left,top,right,bottom):
                     
                     if left[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + left[1]*Alpha/dx**2
+                        source[j,i] = Tc_old[j,i]/dt + left[1][j]*Alpha/dx**2
                     elif left[0] == 'N':
                         ac[j,i] = (1./dt) + Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + left[1]/dx
+                        source[j,i] = Tc_old[j,i]/dt + left[1][j]/dx
                     else:
                         raise ValueError('Appropriate boundary conditions not chosen')
                     
@@ -189,10 +189,10 @@ def assemble_A_and_S(K,Cp,rho,Tc_old,dt,ny,nx,dx,dy,left,top,right,bottom):
                     
                     if right[0] == 'D':
                         ac[j,i] = (1./dt) + 2*Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt + right[1]*Alpha/dx**2
+                        source[j,i] = Tc_old[j,i]/dt + right[1][j]*Alpha/dx**2
                     elif right[0] == 'N':
                         ac[j,i] = (1./dt) + Alpha/dx**2 + 2*Alpha/dy**2
-                        source[j,i] = Tc_old[j,i]/dt - right[1]/dx
+                        source[j,i] = Tc_old[j,i]/dt - right[1][j]/dx
                     else:
                         raise ValueError('Appropriate boundary conditions not chosen')
                     
@@ -205,6 +205,9 @@ def assemble_A_and_S(K,Cp,rho,Tc_old,dt,ny,nx,dx,dy,left,top,right,bottom):
     A = mt.assemble_a_to_A(ny-2, nx-2, ac[1:-1,1:-1],ar[1:-1,1:-1],al[1:-1,1:-1],at[1:-1,1:-1],ab[1:-1,1:-1])
     
     return (A, source[1:-1,1:-1])
+
+
+#.........................................................................................................................................................
 
 def solve_Temperature2D(K,Cp,rho,ny,nx,dx,dy,left,top,right,bottom,file_name,path_name,T_ini,dt,t,save_t):
     
@@ -219,15 +222,20 @@ def solve_Temperature2D(K,Cp,rho,ny,nx,dx,dy,left,top,right,bottom,file_name,pat
         
         # Boundary Conditions implementation over the grid:
         if left[0] == 'D' and top[0] == 'D' and right[0] == 'D' and bottom[0] == 'D':
-            T_old[:,0] = left[1]
-            T_old[0,:] = top[1]
-            T_old[:,-1] = right[1]
-            T_old[-1,:] = bottom[1]
+            T_old[:,0] = left[1][:]
+            T_old[0,:] = top[1][:]
+            T_old[:,-1] = right[1][:]
+            T_old[-1,:] = bottom[1][:]
         elif left[0] == 'N' and top[0] == 'D' and right[0] == 'D' and bottom[0] == 'D':
-            T_old[0,:] = top[1]
-            T_old[:,-1] = right[1]
-            T_old[-1,:] = bottom[1]
-            T_old[:,0] = T_old[:,1]+left[1]*dx
+            T_old[0,:] = top[1][:]
+            T_old[:,-1] = right[1][:]
+            T_old[-1,:] = bottom[1][:]
+            T_old[:,0] = T_old[:,1]+left[1][:]*dx
+        elif top[0] == 'N' and bottom[0] == 'N' and right[0] == 'D' and left[0] == 'D':
+            T_old[:,0] = left[1][:]
+            T_old[:,-1] = right[1][:]
+            T_old[0,:] = T_old[1,:]+top[1][:]*dy
+            T_old[-1,:] = T_old[-2,:]+bottom[1][:]*dy
         else:
             raise ValueError('This boundary condition is not yet implemented')
         
