@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Sep 14 14:37:48 2020
+Created on Fri Sep 18 08:41:24 2020
 
+@author: sn249179
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Sep 14 14:37:48 2020
 @author: snandan
 """
 
@@ -19,7 +26,7 @@ def Grad_X(Sc, j, i, h): # Sc = value of a scalar S at the cell centers
 
 def Grad_Y(Sc, j, i, h): # Sc = value of a scalar S at the cell centers
     
-    grad = (1./12.)*(Sc[j+1,i+1] - Sc[j-1,i+1]) + (1./3.)*(Sc[j+1,i] - Sc[j-1,i]) + (1./12.)*(Sc[j+1,i-1] - Sc[j-1,i-1])
+    grad = (1./12.)*(Sc[j-1,i+1] - Sc[j+1,i+1]) + (1./3.)*(Sc[j-1,i] - Sc[j+1,i]) + (1./12.)*(Sc[j-1,i-1] - Sc[j+1,i-1])
     
     return grad/h # returns 8-point y-gradient for any cell located at (j,i) index
 
@@ -42,15 +49,9 @@ def Sc_extremum(S_NL, Sc, c_index, cr_index):
     
     return extremum
         
-def MLP_Limiter_X(Sc, dx, dy, beta, epsilon):
+def MLP_Limiter(Sc, dx, dy, beta, epsilon):
     
-    # In X-direction.............................................................................................
-    
-    # limiter_values_corners = np.zeros((np.shape(Sc)[0]-3,np.shape(Sc)[1]-3))
     limiter_values_centers = np.zeros(np.shape(Sc))
-    
-    dcr = np.sqrt(np.square(dx) + np.square(dy)) / 2. # distance between center of cell to the corner of the cell..
-                                                      # ..in a cartesian structured grid
     
     # loops over cells:
     for j in np.flip(range(2,np.shape(Sc)[0]-2)): # loop over rows in 2D cartesian structured grid
@@ -62,16 +63,16 @@ def MLP_Limiter_X(Sc, dx, dy, beta, epsilon):
             right_bottom_cr = (j-1,i-1)
             
             
-            S_NL_left_top_cr = Sc[j,i] - Grad_X(Sc,j,i,dx) * dcr
+            S_NL_left_top_cr = Sc[j,i] - Grad_X(Sc,j,i,dx) * (dx/2.) + Grad_Y(Sc,j,i,dy) * (dy/2.)
             
-            S_NL_left_bottom_cr = Sc[j,i] - Grad_X(Sc,j,i,dx) * dcr
+            S_NL_left_bottom_cr = Sc[j,i] - Grad_X(Sc,j,i,dx) * (dx/2.) - Grad_Y(Sc,j,i,dy) * (dy/2.)
             
-            S_NL_right_top_cr = Sc[j,i] + Grad_X(Sc,j,i,dx) * dcr
+            S_NL_right_top_cr = Sc[j,i] + Grad_X(Sc,j,i,dx) * (dx/2.) + Grad_Y(Sc,j,i,dy) * (dy/2.)
             
-            S_NL_right_bottom_cr = Sc[j,i] + Grad_X(Sc,j,i,dx) * dcr
+            S_NL_right_bottom_cr = Sc[j,i] + Grad_X(Sc,j,i,dx) * (dx/2.) - Grad_Y(Sc,j,i,dy) * (dy/2.)
             
             
-            extremum_Scr_left_top_cr = Sc_extremum(S_NL_left_top_cr, Sc, (j,i), left_top_cr) #error
+            extremum_Scr_left_top_cr = Sc_extremum(S_NL_left_top_cr, Sc, (j,i), left_top_cr)
             
             extremum_Scr_left_bottom_cr = Sc_extremum(S_NL_left_bottom_cr, Sc, (j,i), left_bottom_cr)
             
@@ -123,117 +124,23 @@ def MLP_Limiter_X(Sc, dx, dy, beta, epsilon):
             limiter_values_right_bottom_cr = diff_exm_Sc_right_bottom_cr / diff_NL_Sc_right_bottom_cr
             limiter_values_right_bottom_cr = np.min((beta, limiter_values_right_bottom_cr))
             
-            # if j == 40 and i>=35:
-            #     print('xxx')
             
             limiter_values_centers[j,i] = np.min((limiter_values_left_top_cr, limiter_values_left_bottom_cr, \
                                                  limiter_values_right_top_cr, limiter_values_right_bottom_cr))
             
-            if limiter_values_centers[j,i]< 0.:
-                print('X limiter values less than 0', limiter_values_centers[j,i])  
-                print(diff_NL_Sc_left_top_cr,'\n')
-                print(diff_NL_Sc_left_bottom_cr,'\n')
-                print(diff_NL_Sc_right_top_cr,'\n')
-                print(diff_NL_Sc_right_bottom_cr,'\n')
-                print(limiter_values_left_top_cr,'\n')
-                print(limiter_values_left_bottom_cr,'\n')
-                print(limiter_values_right_top_cr,'\n')
-                print(limiter_values_right_bottom_cr,'\n')
-                print((j,i))
+            # if limiter_values_centers[j,i]< 0.:
+            #     print('X limiter values less than 0', limiter_values_centers[j,i])  
+            #     print(diff_NL_Sc_left_top_cr,'\n')
+            #     print(diff_NL_Sc_left_bottom_cr,'\n')
+            #     print(diff_NL_Sc_right_top_cr,'\n')
+            #     print(diff_NL_Sc_right_bottom_cr,'\n')
+            #     print(limiter_values_left_top_cr,'\n')
+            #     print(limiter_values_left_bottom_cr,'\n')
+            #     print(limiter_values_right_top_cr,'\n')
+            #     print(limiter_values_right_bottom_cr,'\n')
+            #     print((j,i))
     
     return limiter_values_centers
-            
-    # X-direction.................................................................................................
-            
-def MLP_Limiter_Y(Sc, dx, dy, beta, epsilon):
-    
-    # In Y-direction..............................................................................................
-    
-    # limiter_values_corners = np.zeros((np.shape(Sc)[0]-3,np.shape(Sc)[1]-3))
-    limiter_values_centers = np.zeros(np.shape(Sc))
-    
-    dcr = np.sqrt(np.square(dx) + np.square(dy)) / 2. # distance between center of cell to the corner of the cell..
-                                                      # ..in a cartesian structured grid
-    
-    # loops over cells:
-    for j in np.flip(range(2,np.shape(Sc)[0]-2)): # loop over rows in 2D cartesian structured grid
-        for i in range(2,np.shape(Sc)[0]-2): # loop over columns in 2D cartesian structured grid
-            
-            left_top_cr = (j-2,i-2)
-            left_bottom_cr = (j-1,i-2)
-            right_top_cr = (j-2,i-1)
-            right_bottom_cr = (j-1,i-1)
-            
-            
-            S_NL_left_bottom_cr = Sc[j,i] - Grad_Y(Sc,j,i,dx) * dcr
-            
-            S_NL_right_bottom_cr = Sc[j,i] - Grad_Y(Sc,j,i,dx) * dcr
-            
-            S_NL_left_top_cr = Sc[j,i] + Grad_Y(Sc,j,i,dx) * dcr
-            
-            S_NL_right_top_cr = Sc[j,i] + Grad_Y(Sc,j,i,dx) * dcr
-            
-            
-            extremum_Scr_left_top_cr = Sc_extremum(S_NL_left_top_cr, Sc, (j,i), left_top_cr)
-            
-            extremum_Scr_left_bottom_cr = Sc_extremum(S_NL_left_bottom_cr, Sc, (j,i), left_bottom_cr)
-            
-            extremum_Scr_right_top_cr = Sc_extremum(S_NL_right_top_cr, Sc, (j,i), right_top_cr)
-            
-            extremum_Scr_right_bottom_cr = Sc_extremum(S_NL_right_bottom_cr, Sc, (j,i), right_bottom_cr)
-            
-            
-            diff_exm_Sc_left_top_cr = extremum_Scr_left_top_cr - Sc[j,i]
-            
-            diff_exm_Sc_left_bottom_cr = extremum_Scr_left_bottom_cr - Sc[j,i]
-            
-            diff_exm_Sc_right_top_cr = extremum_Scr_right_top_cr - Sc[j,i]
-            
-            diff_exm_Sc_right_bottom_cr = extremum_Scr_right_bottom_cr - Sc[j,i]
-            
-            
-            diff_NL_Sc_left_top_cr = S_NL_left_top_cr - Sc[j,i]
-            
-            diff_NL_Sc_left_bottom_cr = S_NL_left_bottom_cr - Sc[j,i]
-            
-            diff_NL_Sc_right_top_cr = S_NL_right_top_cr - Sc[j,i]
-            
-            diff_NL_Sc_right_bottom_cr = S_NL_right_bottom_cr - Sc[j,i]
-            
-            # ensuring boundedness
-            if S_NL_left_top_cr == Sc[j,i]:
-                diff_NL_Sc_left_top_cr = epsilon
-                
-            if S_NL_left_bottom_cr == Sc[j,i]:
-                diff_NL_Sc_left_bottom_cr = epsilon
-                
-            if S_NL_right_top_cr == Sc[j,i]:
-                diff_NL_Sc_right_top_cr = epsilon
-            
-            if S_NL_right_bottom_cr - Sc[j,i]:
-                diff_NL_Sc_right_bottom_cr = epsilon
-            
-            
-            limiter_values_left_top_cr = diff_exm_Sc_left_top_cr / diff_NL_Sc_left_top_cr
-            limiter_values_left_top_cr = np.min((beta, limiter_values_left_top_cr))
-            
-            limiter_values_left_bottom_cr = diff_exm_Sc_left_bottom_cr / diff_NL_Sc_left_bottom_cr
-            limiter_values_left_bottom_cr = np.min((beta, limiter_values_left_bottom_cr))
-            
-            limiter_values_right_top_cr = diff_exm_Sc_right_top_cr / diff_NL_Sc_right_top_cr
-            limiter_values_right_top_cr = np.min((beta, limiter_values_right_top_cr))
-            
-            limiter_values_right_bottom_cr = diff_exm_Sc_right_bottom_cr / diff_NL_Sc_right_bottom_cr
-            limiter_values_right_bottom_cr = np.min((beta, limiter_values_right_bottom_cr))
-            
-            
-            limiter_values_centers[j,i] = np.min((limiter_values_left_top_cr, limiter_values_left_bottom_cr, \
-                                                 limiter_values_right_top_cr, limiter_values_right_bottom_cr))
-                
-    return limiter_values_centers
-    
-    
-    # Y-direction.................................................................................................
     
 def Face_Flux(S_LB, S_RT): #Gudonov type flux determination
     
@@ -258,7 +165,6 @@ def Face_Flux(S_LB, S_RT): #Gudonov type flux determination
     
     return sFace
     
-
 def solve_linearAdvection2D(c,beta,dx,dy,left,top,right,bottom,file_name,path_name,Sc,dt,t,save_t,epsilon):
         
     nt = int(t/dt)
@@ -292,16 +198,11 @@ def solve_linearAdvection2D(c,beta,dx,dy,left,top,right,bottom,file_name,path_na
                 save_n += int(save_t/dt)
             file_num += 1
         
-        mlp_limiter_x = MLP_Limiter_X(Sc_old, dx, dy, beta, epsilon)
-        mlp_limiter_y = MLP_Limiter_Y(Sc_old, dx, dy, beta, epsilon)
+        mlp_limiter = MLP_Limiter(Sc_old, dx, dy, beta, epsilon)
         
-        if np.any(mlp_limiter_x< 0.):
-#            print('X limiter values less than 0', mlp_limiter_x[mlp_limiter_x< 0.])
-            break
-        
-        if np.any(mlp_limiter_y< 0.):
-            print('Y limiter values less than 0', mlp_limiter_y[mlp_limiter_y< 0.])
-#            break
+        # if np.any(mlp_limiter_x< 0.):
+        #     print('X limiter values less than 0', mlp_limiter_x[mlp_limiter_x< 0.])
+        #     break
             
     
         # loops over cells:
@@ -309,21 +210,21 @@ def solve_linearAdvection2D(c,beta,dx,dy,left,top,right,bottom,file_name,path_na
             for i in range(2,np.shape(Sc)[0]-2): # loop over columns in 2D cartesian structured grid
                 
                 # MUSCL type linear reconstruction in each cell using MLP type limiter
-                Sw_L = Sc_old[j,i-1] + mlp_limiter_x[j,i-1]*Grad_X(Sc_old, j, i-1, dx)*(dx/2.)
+                Sw_L = Sc_old[j,i-1] + mlp_limiter[j,i-1]*Grad_X(Sc_old, j, i-1, dx)*(dx/2.)
                 
-                Sw_R = Sc_old[j,i] - mlp_limiter_x[j,i]*Grad_X(Sc_old, j, i, dx)*(dx/2.)
+                Sw_R = Sc_old[j,i] - mlp_limiter[j,i]*Grad_X(Sc_old, j, i, dx)*(dx/2.)
                 
-                Se_L = Sc_old[j,i] + mlp_limiter_x[j,i]*Grad_X(Sc_old, j, i, dx)*(dx/2.)
+                Se_L = Sc_old[j,i] + mlp_limiter[j,i]*Grad_X(Sc_old, j, i, dx)*(dx/2.)
                 
-                Se_R = Sc_old[j,i+1] - mlp_limiter_x[j,i+1]*Grad_X(Sc_old, j, i+1, dx)*(dx/2.)
+                Se_R = Sc_old[j,i+1] - mlp_limiter[j,i+1]*Grad_X(Sc_old, j, i+1, dx)*(dx/2.)
                 
-                Ss_B = Sc_old[j+1,i] + mlp_limiter_y[j+1,i]*Grad_Y(Sc_old, j+1, i, dy)*(dy/2.)
+                Ss_B = Sc_old[j+1,i] + mlp_limiter[j+1,i]*Grad_Y(Sc_old, j+1, i, dy)*(dy/2.)
                 
-                Ss_T = Sc_old[j,i] - mlp_limiter_y[j,i]*Grad_Y(Sc_old, j, i, dy)*(dy/2.)
+                Ss_T = Sc_old[j,i] - mlp_limiter[j,i]*Grad_Y(Sc_old, j, i, dy)*(dy/2.)
                 
-                Sn_B = Sc_old[j,i] + mlp_limiter_y[j,i]*Grad_Y(Sc_old, j, i, dy)*(dy/2.)
+                Sn_B = Sc_old[j,i] + mlp_limiter[j,i]*Grad_Y(Sc_old, j, i, dy)*(dy/2.)
                 
-                Sn_T = Sc_old[j-1,i] - mlp_limiter_y[j-1,i]*Grad_Y(Sc_old, j-1, i, dy)*(dy/2.)
+                Sn_T = Sc_old[j-1,i] - mlp_limiter[j-1,i]*Grad_Y(Sc_old, j-1, i, dy)*(dy/2.)
                 
                 
                 # Explicit R-K2 time stepping with Gudonow type flux determination
@@ -335,8 +236,8 @@ def solve_linearAdvection2D(c,beta,dx,dy,left,top,right,bottom,file_name,path_na
                 Sc[j,i] = Sc_old[j,i] + (0.5*K1 + 0.5*K2)*dt
                 
                 # Explicit Euler time stepping with Gudonow type flux determination
-#                Sc[j,i] = Sc_old[j,i] + (c*dt/dx)*(Face_Flux(Sw_L, Sw_R) - Face_Flux(Se_L, Se_R)) + (c*dt/dy)*(Face_Flux(Ss_B, Ss_T) - \
-#                                                                                                           Face_Flux(Sn_B, Sn_T))
+                #Sc[j,i] = Sc_old[j,i] + (c*dt/dx)*(Face_Flux(Sw_L, Sw_R) - Face_Flux(Se_L, Se_R)) + (c*dt/dy)*(Face_Flux(Ss_B, Ss_T) - \
+                #                                                                                          Face_Flux(Sn_B, Sn_T))
     
 
 
@@ -350,18 +251,18 @@ if __name__ == "__main__":
     dy = 2/(ny-4)
     dt = 0.00117
     beta = 2.
-    t = 0.1 # with these dx,dt and c, the CFL number is = 0.3
+    t = 0.5 # with these dx,dt and c, the CFL number is = 0.3
     
-    Sc_ini = np.ones((ny,nx))
+    Sc_ini = np.zeros((ny,nx))
     
     # Boundary conditions:
-    left = ('D', 1.0)
-    top = ('D', 1.0)
-    right = ('D', 1.0)
-    bottom = ('D', 1.0)
+    left = ('D', 0.0)
+    top = ('D', 0.0)
+    right = ('D', 0.0)
+    bottom = ('D', 0.0)
     
     ## set hat function I.C.
-    Sc_ini[int(.5 / dy):int(1 / dy + 1), int(.5 / dx):int(1 / dx + 1)] = 2
+    Sc_ini[int(1.3 / dy):int(1.8 / dy + 1.8), int(.5 / dx):int(1. / dx + 1.)] = 1.
     
     file_name = '/squareAdvection_explicitEuler_MLP'
     path_name = os.getcwd()
@@ -373,9 +274,3 @@ if __name__ == "__main__":
     solve_linearAdvection2D(c,beta,dx,dy,left,top,right,bottom,file_name,path_name,Sc_ini,dt,t,save_t,epsilon)
     
     
-    
-    
-    
-
-     
-
